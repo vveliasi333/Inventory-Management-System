@@ -41,10 +41,11 @@ namespace InventoryManagementSystem
             this.txtPhone = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.btnSave = new System.Windows.Forms.Button();
-            this.btnUpdate = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
             this.txtRepass = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
+            this.comboType = new System.Windows.Forms.ComboBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -76,9 +77,9 @@ namespace InventoryManagementSystem
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(56, 102);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(89, 17);
+            this.label2.Size = new System.Drawing.Size(83, 17);
             this.label2.TabIndex = 1;
-            this.label2.Text = "User Name : ";
+            this.label2.Text = "Username : ";
             // 
             // txtUserName
             // 
@@ -142,7 +143,7 @@ namespace InventoryManagementSystem
             this.btnSave.FlatAppearance.BorderSize = 0;
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSave.ForeColor = System.Drawing.Color.White;
-            this.btnSave.Location = new System.Drawing.Point(254, 336);
+            this.btnSave.Location = new System.Drawing.Point(345, 361);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(94, 37);
             this.btnSave.TabIndex = 9;
@@ -150,27 +151,13 @@ namespace InventoryManagementSystem
             this.btnSave.UseVisualStyleBackColor = false;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
-            // btnUpdate
-            // 
-            this.btnUpdate.BackColor = System.Drawing.Color.Red;
-            this.btnUpdate.FlatAppearance.BorderSize = 0;
-            this.btnUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnUpdate.ForeColor = System.Drawing.Color.White;
-            this.btnUpdate.Location = new System.Drawing.Point(354, 336);
-            this.btnUpdate.Name = "btnUpdate";
-            this.btnUpdate.Size = new System.Drawing.Size(94, 37);
-            this.btnUpdate.TabIndex = 10;
-            this.btnUpdate.Text = "Update";
-            this.btnUpdate.UseVisualStyleBackColor = false;
-            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
-            // 
             // btnClear
             // 
             this.btnClear.BackColor = System.Drawing.Color.Red;
             this.btnClear.FlatAppearance.BorderSize = 0;
             this.btnClear.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClear.ForeColor = System.Drawing.Color.White;
-            this.btnClear.Location = new System.Drawing.Point(454, 336);
+            this.btnClear.Location = new System.Drawing.Point(454, 361);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(94, 37);
             this.btnClear.TabIndex = 11;
@@ -195,15 +182,38 @@ namespace InventoryManagementSystem
             this.label6.TabIndex = 12;
             this.label6.Text = "Re-type Password : ";
             // 
+            // comboType
+            // 
+            this.comboType.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.comboType.FormattingEnabled = true;
+            this.comboType.Items.AddRange(new object[] {
+            "Administrator",
+            "User",
+            "Guest"});
+            this.comboType.Location = new System.Drawing.Point(152, 313);
+            this.comboType.Name = "comboType";
+            this.comboType.Size = new System.Drawing.Size(396, 25);
+            this.comboType.TabIndex = 14;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(101, 316);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(44, 17);
+            this.label7.TabIndex = 15;
+            this.label7.Text = "Type: ";
+            // 
             // UserModuleForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(602, 396);
+            this.ClientSize = new System.Drawing.Size(602, 420);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.comboType);
             this.Controls.Add(this.txtRepass);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.btnClear);
-            this.Controls.Add(this.btnUpdate);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.txtPhone);
             this.Controls.Add(this.label5);
@@ -238,7 +248,6 @@ namespace InventoryManagementSystem
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         public System.Windows.Forms.Button btnSave;
-        public System.Windows.Forms.Button btnUpdate;
         public System.Windows.Forms.Button btnClear;
         public System.Windows.Forms.TextBox txtUserName;
         public System.Windows.Forms.TextBox txtFullName;
@@ -246,5 +255,7 @@ namespace InventoryManagementSystem
         public System.Windows.Forms.TextBox txtPhone;
         public System.Windows.Forms.TextBox txtRepass;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ComboBox comboType;
+        private System.Windows.Forms.Label label7;
     }
 }

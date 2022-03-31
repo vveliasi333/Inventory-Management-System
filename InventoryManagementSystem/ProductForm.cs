@@ -1,135 +1,71 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-//the namespace with the same name as the solution
 namespace InventoryManagementSystem
 {
-    //the class of Product Form derived from the Form class of Windows Forms
+
     public partial class ProductForm : Form
     {
-        /*the SqlConnection command where we paste the connection string
-          in order to link the SQL database of the project*/
-        SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\Leonard\Documents\InventoryManagementSystem\Database\DB_Inventory.mdf;Integrated Security=True;Connect Timeout=30");
+        //context field of the database (DBIMSEntities)
+        DBIMSEntities context = new DBIMSEntities();
 
-        //declaring the SqlCommand in order to use it for queries executed on tables
-        SqlCommand cm = new SqlCommand();
-
-        //declaring the SqlDataReader in order to read data from the database tables
-        SqlDataReader dr;
-
-        //initializes the Product Form
+        //method that initializes the ProductForm
         public ProductForm()
         {
             InitializeComponent();
-            LoadProduct();
+            LoadProduct(); //calling the LoadProduct method at form initialization
         }
 
-        //method for loading every product and their respective details to the data grid view
+        //the implementation of the method that shows product data from the table to the data grid view of the ProductForm
         public void LoadProduct()
         {
-            //code block for selecting every product of the table
-            int i = 0;
-            dgvProduct.Rows.Clear();
-            cm = new SqlCommand("SELECT * FROM tbProduct WHERE CONCAT(pid, pname, pprice, pdescription, pcategory) LIKE '%"+txtSearch.Text+"%'", con);
-            con.Open();
-            dr = cm.ExecuteReader();
+            //entities is a local variable created to use the database as an instance, in order to execute the queries
+            DBIMSEntities entities = new DBIMSEntities();
 
-            //while loop to fill out the rows of the data grid view with products' details
-            while (dr.Read())
-            {
-                i++;
-                dgvProduct.Rows.Add(i, dr[0].ToString(), dr[1].ToString(), dr[2].ToString(), dr[3].ToString(), dr[4].ToString(), dr[5].ToString());
-            }
+            //query for loading every product data from the table
+            var products = from p in entities.tbProducts
+                           select new
+                           {
+                               No = p.pid, //retreiving the product Id value to show it to the No column of the data grid view
+                               ProductId = p.pid, //retreiving the product Id value to show it to the Product Id column of the data grid view
+                               Name = p.pname, //retreiving the product name value to show it to the Name column of the data grid view
+                               Qty = p.pqty, //retreiving the product quantity value to show it to the Qty column of the data grid view
+                               Price = p.pprice, //retreiving the product price value to show it to the Price column of the data grid view
+                               Description = p.pdescription, //retreiving the product description value to show it to the Description column of the data grid view
+                               Category = p.pcategory //retreiving the product category value to show it to the Category column of the data grid view
+                           };
 
-            //closing the data reader
-            dr.Close();
-
-            //closing the sql connection
-            con.Close();
+            dgvProduct.DataSource = products.ToList(); //method that executes the query for showing the products with all their data to the list
         }
 
-        //method that executes when add button is clicked
-        private void btnAdd_Click(object sender, EventArgs e)
+        //method for when clicking a cell of the data grid view, specifically used for the Delete column
+        public void dgvProduct_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            //declaring an object in order to use buttons from User Module Form
-            ProductModuleForm formModule = new ProductModuleForm();
-            formModule.btnSave.Enabled = true;
-            formModule.btnUpdate.Enabled = false;
-            formModule.ShowDialog();
-
-            //calling the method of product loading
-            LoadProduct();
-            
-        }
-
-        //method for the data grid view of products
-        private void dgvProduct_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            //converting the role combobox to string and storing it as a variable named role
-            string role = comboRole.Text.ToString();
-
-            //if condition block that hides the delete and edit columns when logged in as a guest
-            if (role == "Guest")
-            {
-                dgvProduct.Columns["Edit"].Visible = false;
-                dgvProduct.Columns["Delete"].Visible = false;
-            }
-
-            //declaring the column name as a string
+            //declaring a string as colName, and assigning it to the column index in order to implement a function for the Delete column
             string colName = dgvProduct.Columns[e.ColumnIndex].Name;
 
-            //if else if condition loop in order to give the edit and delete columns their respective functions
-            if (colName == "Edit")
+            //if condition to locate the Delete column
+            if (colName == "Delete")
             {
-                //showing the product details on their own cells of the data grid view
-                ProductModuleForm productModule = new ProductModuleForm();
-                productModule.lblPid.Text = dgvProduct.Rows[e.RowIndex].Cells[1].Value.ToString();
-                productModule.txtPName.Text = dgvProduct.Rows[e.RowIndex].Cells[2].Value.ToString();
-                productModule.txtPQty.Text = dgvProduct.Rows[e.RowIndex].Cells[3].Value.ToString();
-                productModule.txtPPrice.Text = dgvProduct.Rows[e.RowIndex].Cells[4].Value.ToString();
-                productModule.txtPDes.Text = dgvProduct.Rows[e.RowIndex].Cells[5].Value.ToString();
-                productModule.comboCat.Text = dgvProduct.Rows[e.RowIndex].Cells[6].Value.ToString();
-
-                productModule.btnSave.Enabled = false;
-                productModule.btnUpdate.Enabled = true;                
-                productModule.ShowDialog();
-            }
-
-            //else if block that gives the delete column the function of deleting a product from the table
-            else if (colName == "Delete")
-            {
-                //shows a message box when clicking the delete column
-                if (MessageBox.Show("Are you sure you want to delete this product?", "Delete Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                //if condition to check if the Delete column cell is clicked
+                if (MessageBox.Show("Are you sure you want to delete this product?", "Delete Product", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    con.Open();
+                    Guid productid = new Guid(dgvProduct.Rows[e.RowIndex].Cells[1].Value.ToString()); //converting the Guid datatype of the product Id to string
 
-                    //sql command that executes the query for deleting a product
-                    cm = new SqlCommand("DELETE FROM tbProduct WHERE pid LIKE '" + dgvProduct.Rows[e.RowIndex].Cells[1].Value.ToString() + "'", con);
-                    cm.ExecuteNonQuery();
-                    con.Close();
-                    MessageBox.Show("Record has been successfully deleted!");
+                    var deleteproduct = (from p in context.tbProducts where p.pid == productid select p).First(); //query to select the product Id from tbProduct (Product Table)
+                    context.tbProducts.Remove(deleteproduct); //remove method that executes the query (held by the deleteproduct variable) for deleting a product from the table
+                    context.SaveChanges(); //method that saves changes to the table
+
+                    MessageBox.Show("Product has been successfully deleted.", "Product Deleted");
                 }
+                //calling the LoadProduct method to refresh the table data after changes are made
+                LoadProduct();
             }
-
-            //calling the product loading method
-            LoadProduct();
         }
 
-        //method for the search box included in the Product Form
-        private void txtSearch_TextChanged(object sender, EventArgs e)
-        {
-            LoadProduct();
-        }
-
-        //'X' button that closes this form
+        //method that hides the current form when 'X' button is clicked
         private void exitPF_Click(object sender, EventArgs e)
         {
             this.Hide();

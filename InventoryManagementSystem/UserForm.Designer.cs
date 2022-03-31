@@ -37,11 +37,12 @@ namespace InventoryManagementSystem
             this.label1 = new System.Windows.Forms.Label();
             this.dgvUser = new System.Windows.Forms.DataGridView();
             this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Edit = new System.Windows.Forms.DataGridViewImageColumn();
+            this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Delete = new System.Windows.Forms.DataGridViewImageColumn();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.exitUF)).BeginInit();
@@ -97,11 +98,12 @@ namespace InventoryManagementSystem
             this.dgvUser.ColumnHeadersHeight = 30;
             this.dgvUser.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column5,
+            this.Column6,
             this.Column1,
             this.Column2,
             this.Column3,
             this.Column4,
-            this.Edit,
+            this.Column7,
             this.Delete});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
@@ -122,49 +124,65 @@ namespace InventoryManagementSystem
             // 
             // Column5
             // 
-            this.Column5.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Column5.DataPropertyName = "No";
             this.Column5.HeaderText = "No";
             this.Column5.Name = "Column5";
+            this.Column5.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Column5.Width = 50;
+            // 
+            // Column6
+            // 
+            this.Column6.DataPropertyName = "Id";
+            this.Column6.HeaderText = "User Id";
+            this.Column6.Name = "Column6";
+            this.Column6.Width = 80;
             // 
             // Column1
             // 
+            this.Column1.DataPropertyName = "Username";
             this.Column1.HeaderText = "User Name";
             this.Column1.Name = "Column1";
+            this.Column1.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Column1.Width = 200;
             // 
             // Column2
             // 
+            this.Column2.DataPropertyName = "Fullname";
             this.Column2.HeaderText = "Full Name";
             this.Column2.Name = "Column2";
-            this.Column2.Width = 307;
+            this.Column2.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Column2.Width = 200;
             // 
             // Column3
             // 
+            this.Column3.DataPropertyName = "Password";
             this.Column3.HeaderText = "Password";
             this.Column3.Name = "Column3";
+            this.Column3.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Column3.Width = 150;
             // 
             // Column4
             // 
+            this.Column4.DataPropertyName = "Phone";
             this.Column4.HeaderText = "Phone";
             this.Column4.Name = "Column4";
-            this.Column4.Width = 200;
+            this.Column4.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Column4.Width = 150;
             // 
-            // Edit
+            // Column7
             // 
-            this.Edit.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Edit.HeaderText = "";
-            this.Edit.Image = ((System.Drawing.Image)(resources.GetObject("Edit.Image")));
-            this.Edit.Name = "Edit";
-            this.Edit.Width = 5;
+            this.Column7.DataPropertyName = "Type";
+            this.Column7.HeaderText = "Type";
+            this.Column7.Name = "Column7";
             // 
             // Delete
             // 
             this.Delete.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Delete.DataPropertyName = "Delete";
             this.Delete.HeaderText = "";
             this.Delete.Image = ((System.Drawing.Image)(resources.GetObject("Delete.Image")));
             this.Delete.Name = "Delete";
+            this.Delete.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Delete.Width = 5;
             // 
             // UserForm
@@ -176,6 +194,7 @@ namespace InventoryManagementSystem
             this.Controls.Add(this.panel1);
             this.Font = new System.Drawing.Font("Century Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "UserForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -195,11 +214,12 @@ namespace InventoryManagementSystem
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.PictureBox exitUF;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
-        private System.Windows.Forms.DataGridViewImageColumn Edit;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
         private System.Windows.Forms.DataGridViewImageColumn Delete;
     }
 }

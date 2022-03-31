@@ -1,110 +1,70 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data.SqlClient;
+using System.Data;
+using System.Linq;
 
-//the namespace with the same name as the solution
 namespace InventoryManagementSystem
 {
-    //the class of User Form derived from the Form class of Windows Forms
     public partial class UserForm : Form
     {
-        /*the SqlConnection command where we paste the connection string
-          in order to link the SQL database of the project*/
-        SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\Leonard\Documents\InventoryManagementSystem\Database\DB_Inventory.mdf;Integrated Security=True;Connect Timeout=30");
+        //context field of the database (DBIMSEntities)
+        DBIMSEntities context = new DBIMSEntities();
 
-        //declaring the SqlCommand in order to use it for queries executed on tables
-        SqlCommand cm = new SqlCommand();
-
-        //declaring the SqlDataReader in order to read data from the database tables
-        SqlDataReader dr;
-
-        //initializes the User Form
+        //method that initializes the UserForm
         public UserForm()
         {
             InitializeComponent();
-            LoadUser();
+            LoadUser(); //calling the LoadUser method at form initialization
         }
 
-        //method for loading every user and their respective details to the data grid view
+        //the implementation of the method that shows user data from the table to the data grid view of the UserForm
         public void LoadUser()
         {
-            //code block for selecting every user of the table
-            int i = 0;
-            dgvUser.Rows.Clear();
-            cm = new SqlCommand("SELECT * FROM tbUser", con);
-            con.Open();
-            dr = cm.ExecuteReader();
+            //entities is a local variable created to use the database as an instance, in order to execute the queries
+            DBIMSEntities entities = new DBIMSEntities();
 
-            //while loop to fill out the rows of the data grid view with users' details
-            while (dr.Read())
-            {
-                i++;
-                dgvUser.Rows.Add(i, dr[0].ToString(), dr[1].ToString(), dr[2].ToString(), dr[3].ToString());
-            }
-            dr.Close();
-            con.Close();
+            //query for loading every user data from the table
+            var users = from u in entities.tbUsers
+                        select new
+                        {
+                            No = u.Id, //retreiving the Id value to show it to the No column of the data grid view
+                            Id = u.Id, //retreiving the Id value to show it to the User Id column of the data grid view
+                            Username = u.Username, //retreiving the Username value to show it to the Username column of the data grid view
+                            Fullname = u.Fullname, //retreiving the Fullname value to show it to the Fullname column of the data grid view
+                            Password = u.Password, //retreiving the Password value to show it to the Password column of the data grid view
+                            Phone = u.Phone, //retreiving the Phone value to show it to the Phone column of the data grid view
+                            Type = u.Type //retreiving the Type value to show it to the Type column of the data grid view
+                        };
+
+            dgvUser.DataSource = users.ToList(); //method that executes the query for showing the users with all their data to the list
         }
 
-        //method that executes when add button is clicked
-        private void btnAdd_Click(object sender, EventArgs e)
-        {
-            //declaring an object in order to use buttons from User Module Form
-            UserModuleForm userModule = new UserModuleForm();
-            userModule.btnSave.Enabled = true;
-            userModule.btnUpdate.Enabled = false;
-            ShowDialog();
-
-            //calling the user loading method
-            LoadUser();
-        }
-
-        //method for the data grid view of users
+        //method for when clicking a cell of the data grid view, specifically used for the Delete column
         public void dgvUser_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            //declaring an object from User Module Form in order to access them later
-            UserModuleForm userModule = new UserModuleForm();
-
-            //declaring the column name as a string
+            //declaring a string as colName, and assigning it to the column index in order to implement a function for the Delete column
             string colName = dgvUser.Columns[e.ColumnIndex].Name;
 
-            //if else if condition loop in order to give the edit and delete columns their respective functions
-            if (colName == "Edit")
+            //if condition to locate the Delete column
+            if (colName == "Delete")
             {
-                //showing the user details on their own cells of the data grid view
-                userModule.txtUserName.Text = dgvUser.Rows[e.RowIndex].Cells[1].Value.ToString();
-                userModule.txtFullName.Text = dgvUser.Rows[e.RowIndex].Cells[2].Value.ToString();
-                userModule.txtPass.Text = dgvUser.Rows[e.RowIndex].Cells[3].Value.ToString();
-                userModule.txtPhone.Text = dgvUser.Rows[e.RowIndex].Cells[4].Value.ToString();
-            }
-
-            //else if block that gives the delete column the function of deleting a user from the table
-            else if (colName == "Delete")
-            {
-                //shows a message box when clicking the delete column
-                if (MessageBox.Show("Are you sure you want to delete this user?", "Delete Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                //if condition to check if the Delete column cell is clicked
+                if (MessageBox.Show("Are you sure you want to delete this user?", "Delete User", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    con.Open();
+                    Guid userid = new Guid(dgvUser.Rows[e.RowIndex].Cells[1].Value.ToString()); //converting the Guid datatype of the user Id to string
 
-                    //sql command that executes the query for deleting a user
-                    cm = new SqlCommand("DELETE FROM tbUser WHERE username LIKE '" + dgvUser.Rows[e.RowIndex].Cells[1].Value.ToString() + "'", con);
-                    cm.ExecuteNonQuery();
-                    con.Close();
-                    MessageBox.Show("Record has been successfully deleted!");
+                    var deleteuser = (from u in context.tbUsers where u.Id == userid select u).First(); //query to select the user Id from tbUser (User Table)
+                    context.tbUsers.Remove(deleteuser); //remove method that executes the query (held by the deleteuser variable) for deleting a user from the table
+                    context.SaveChanges(); //method that saves changes to the table
+
+                    MessageBox.Show("User has been successfully deleted.", "User Deleted");
                 }
+                //calling the LoadUser method to refresh the table data after changes are made
+                LoadUser();
             }
-
-            //calling the user loading method
-            LoadUser();
         }
 
-        //'X' button that closes this form
+        //method that hides the current form when 'X' button is clicked
         private void exitUF_Click(object sender, EventArgs e)
         {
             this.Hide();

@@ -1,89 +1,116 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data.SqlClient;
 
-//the namespace with the same name as the solution
 namespace InventoryManagementSystem
 {
-    //the class of User Module Form derived from the Form class of Windows Forms
     public partial class UserModuleForm : Form
     {
-        /*the SqlConnection command where we paste the connection string
-          in order to link the SQL database of the project*/
-        SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\Leonard\Documents\InventoryManagementSystem\Database\DB_Inventory.mdf;Integrated Security=True;Connect Timeout=30");
-        
-        //declaring the SqlCommand in order to use it for queries executed on tables
-        SqlCommand cm = new SqlCommand();
+        //context field of the database (DBIMSEntities)
+        DBIMSEntities context = new DBIMSEntities();
 
-        //initializes the User Model Form
+        //method that initializes the UserModuleForm
         public UserModuleForm()
         {
             InitializeComponent();
         }
 
-        //the method that gets executed when we click the save button
+        //method when Save button is clicked
         private void btnSave_Click(object sender, EventArgs e)
         {
-            /*try block: firstly, outputs an error if passwords don't match,
-              and secondly, the function for inserting users to the user table*/
             try
             {
-                if (txtPass.Text != txtRepass.Text)
+                //if condition to check if both passwords match when saving a user
+                if (txtPass.Text != txtRepass.Text) //txtPass and txtRepass are textboxes of Password and Re-password respectively
                 {
-                    //message that pops up when passwords don't match
-                    MessageBox.Show("Password did not Match!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Passwords do not match!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-                if (MessageBox.Show("Are you sure you want to save this user?", "Saving Record",MessageBoxButtons.YesNo,MessageBoxIcon.Question)==DialogResult.Yes)
+
+                using (var db = new DBIMSEntities()) //db is a variable used as an instance of DBIMSEntities, in order to execute queries on the database
                 {
-                    //code block for inserting users into user table
-                    cm = new SqlCommand("INSERT INTO tbUser(username, fullname, password, phone)VALUES(@username, @fullname, @password, @phone)", con);
-                    cm.Parameters.AddWithValue("@username", txtUserName.Text);
-                    cm.Parameters.AddWithValue("@fullname", txtFullName.Text);
-                    cm.Parameters.AddWithValue("@password", txtPass.Text);
-                    cm.Parameters.AddWithValue("@phone", txtPhone.Text);
+                    var insert = new tbUser(); //insert is a variable used as an instance of tbUser (User table)
 
-                    //opening the database connection
-                    con.Open();
+                    //the following if conditions check if any textbox of the form is empty, and requires the user to fill the credentials out
+                    if ((txtUserName.Text.Length == 0 || txtUserName.Text.Trim().Length == 0)) //username textbox if it is empty
+                    {
+                        MessageBox.Show("Please, fill out the credentials!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
 
-                    //exectuing the query written above
-                    cm.ExecuteNonQuery();
+                    if ((txtFullName.Text.Length == 0 || txtFullName.Text.Trim().Length == 0)) //fullname textbox if it is empty
+                    {
+                        MessageBox.Show("Please, fill out the credentials!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
 
-                    //closing the database connection
-                    con.Close();
+                    if ((txtPass.Text.Length == 0 || txtPass.Text.Trim().Length == 0)) //password textbox if it is empty
+                    {
+                        MessageBox.Show("Please, fill out the credentials!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
 
-                    MessageBox.Show("User has been successfully saved.");
+                    if ((txtRepass.Text.Length == 0 || txtRepass.Text.Trim().Length == 0)) //re-password textbox if it is empty
+                    {
+                        MessageBox.Show("Please, fill out the credentials!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
 
-                    //calling the clear method
-                    Clear();
+                    if ((txtPhone.Text.Length == 0 || txtPhone.Text.Trim().Length == 0)) //phone textbox if it is empty
+                    {
+                        MessageBox.Show("Please, fill out the credentials!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    if ((comboType.Text.Length == 0 || comboType.Text.Trim().Length == 0)) //category combobox if it is empty
+                    {
+                        MessageBox.Show("Please, fill out the credentials!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    //instance of the UserExist method to prevent user duplication
+                    bool exist = UserExist(); //exist is a variable for the method
+
+                    //if condition to check if a user already exists
+                    if (exist == true) //if the answer is true means the user exists
+                    {
+                        MessageBox.Show("A user with the same username already exists!", "Register Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
+                    //else block that executes if all the conditions above are passed
+                    else
+                    {
+                        //lines that insert each data from the table to its respective textbox, and/or combobox
+                        insert.Id = Guid.NewGuid(); //user Id generated as Guid
+                        insert.Username = txtUserName.Text; //Username is the parameter of the table, and txtUserName is the textbox of the form
+                        insert.Fullname = txtFullName.Text; //Fullname is the parameter of the table, and txtFullName is the textbox of the form
+                        insert.Password = txtPass.Text; //Password is the parameter of the table, and txtPassword is the textbox of the form
+                        insert.Password = txtRepass.Text; //Password is the parameter of the table, and txtRepass is the textbox of the form
+                        insert.Phone = txtPhone.Text; //Phone is the parameter of the table, and txtPhone is the textbox of the form
+                        insert.Type = comboType.Text; //Type is the parameter of the table, and comboType is the combobox of the form
+
+                        //add method that executes the query(held by the insert variable) for inserting a user to the table
+                        db.tbUsers.Add(insert);
+
+                        //method that saves changes to the table
+                        db.SaveChanges();
+
+                        MessageBox.Show("User has been successfully saved.", "User Created");
+                    }
                 }
+            }
 
-            //catch block: executes when an error happens, and shows a message box to the user
-            }catch (Exception ex)
+            catch (Exception) //catch block that returns a user-friendly message in case of an error
             {
-
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("An error has occurred!", "Database Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        //the method that gets executed when we click the clear button
-        private void btnClear_Click(object sender, EventArgs e)
-        {
-            Clear();
-            btnSave.Enabled = true;
-            btnUpdate.Enabled = false;
-        }
-
-        //the clear method for clearing the entered strings in respective text boxes
+        //method for the clear button
         public void Clear()
         {
+            //clears every typed info in the textboxes
             txtUserName.Clear();
             txtFullName.Clear();
             txtPass.Clear();
@@ -91,40 +118,39 @@ namespace InventoryManagementSystem
             txtPhone.Clear();
         }
 
-        //the method that gets executed when we click the update button
-        private void btnUpdate_Click(object sender, EventArgs e)
+        //method that executes when clear button is clicked
+        private void btnClear_Click(object sender, EventArgs e)
         {
-            /*try block: firstly, outputs an error if passwords don't match,
-              and secondly, the function for updating users of the user table*/
-            try
-            {
-                if (txtPass.Text != txtRepass.Text)
-                {
-                    //message that pops up when passwords don't match
-                    MessageBox.Show("Password did not Match!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-                if (MessageBox.Show("Are you sure you want to update this user?", "Update Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    //code block for updating users of the user table
-                    cm = new SqlCommand("UPDATE tbUser SET fullname = @fullname, password=@password, phone=@phone WHERE username LIKE '"+txtUserName.Text +"' ", con);                    
-                    cm.Parameters.AddWithValue("@fullname", txtFullName.Text);
-                    cm.Parameters.AddWithValue("@password", txtPass.Text);
-                    cm.Parameters.AddWithValue("@phone", txtPhone.Text);
-                    con.Open();
-                    cm.ExecuteNonQuery();
-                    con.Close();
-                    MessageBox.Show("User has been successfully updated!");
-                    this.Dispose();
-                }
+            Clear();
+            btnSave.Enabled = true;
+        }
 
+        //method that checks if a user already exists in order to prevent duplication
+        public bool UserExist()
+        {
+            //string used to check the inserted username in the respective textbox
+            string user = this.txtUserName.Text;
+
+            //query that selects the username and checks if exists in the table
+            var query = from tr in context.tbUsers //tr is a variable used for the query
+                        where tr.Username == user
+                        select tr;
+
+            //if query returns null means that it does not exist in the table
+            if (query == null)
+            {
+                return false;
             }
 
-            //catch block: executes when an error happens, and shows a message box to the user
-            catch (Exception ex)
+            else if (query.Count() == 0)
             {
+                return false;
+            }
 
-                MessageBox.Show(ex.Message);
+            //else would mean that it does exist in the table
+            else
+            {
+                return true;
             }
         }
     }

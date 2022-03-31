@@ -34,7 +34,6 @@ namespace InventoryManagementSystem
             this.label1 = new System.Windows.Forms.Label();
             this.lblCatId = new System.Windows.Forms.Label();
             this.btnClear = new System.Windows.Forms.Button();
-            this.btnUpdate = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
             this.txtCatName = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -88,27 +87,13 @@ namespace InventoryManagementSystem
             this.btnClear.UseVisualStyleBackColor = false;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
-            // btnUpdate
-            // 
-            this.btnUpdate.BackColor = System.Drawing.Color.Red;
-            this.btnUpdate.FlatAppearance.BorderSize = 0;
-            this.btnUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnUpdate.ForeColor = System.Drawing.Color.White;
-            this.btnUpdate.Location = new System.Drawing.Point(331, 131);
-            this.btnUpdate.Name = "btnUpdate";
-            this.btnUpdate.Size = new System.Drawing.Size(94, 37);
-            this.btnUpdate.TabIndex = 33;
-            this.btnUpdate.Text = "Update";
-            this.btnUpdate.UseVisualStyleBackColor = false;
-            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
-            // 
             // btnSave
             // 
             this.btnSave.BackColor = System.Drawing.Color.Red;
             this.btnSave.FlatAppearance.BorderSize = 0;
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSave.ForeColor = System.Drawing.Color.White;
-            this.btnSave.Location = new System.Drawing.Point(231, 131);
+            this.btnSave.Location = new System.Drawing.Point(323, 131);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(94, 37);
             this.btnSave.TabIndex = 32;
@@ -140,7 +125,6 @@ namespace InventoryManagementSystem
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.lblCatId);
             this.Controls.Add(this.btnClear);
-            this.Controls.Add(this.btnUpdate);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.txtCatName);
             this.Controls.Add(this.label2);
@@ -165,7 +149,6 @@ namespace InventoryManagementSystem
         private System.Windows.Forms.Label label1;
         public System.Windows.Forms.Label lblCatId;
         public System.Windows.Forms.Button btnClear;
-        public System.Windows.Forms.Button btnUpdate;
         public System.Windows.Forms.Button btnSave;
         public System.Windows.Forms.TextBox txtCatName;
         private System.Windows.Forms.Label label2;

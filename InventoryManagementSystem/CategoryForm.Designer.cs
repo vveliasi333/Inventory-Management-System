@@ -36,13 +36,10 @@ namespace InventoryManagementSystem
             this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Edit = new System.Windows.Forms.DataGridViewImageColumn();
             this.Delete = new System.Windows.Forms.DataGridViewImageColumn();
             this.panel1 = new System.Windows.Forms.Panel();
             this.exitCF = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.comboRole = new System.Windows.Forms.ComboBox();
-            this.label11 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCategory)).BeginInit();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.exitCF)).BeginInit();
@@ -68,7 +65,6 @@ namespace InventoryManagementSystem
             this.Column5,
             this.Column1,
             this.Column2,
-            this.Edit,
             this.Delete});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
@@ -89,30 +85,28 @@ namespace InventoryManagementSystem
             // Column5
             // 
             this.Column5.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Column5.DataPropertyName = "No";
             this.Column5.HeaderText = "No";
             this.Column5.Name = "Column5";
+            this.Column5.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Column5.Width = 48;
             // 
             // Column1
             // 
             this.Column1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Column1.DataPropertyName = "CategoryId";
             this.Column1.HeaderText = "Category Id";
             this.Column1.Name = "Column1";
+            this.Column1.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Column1.Width = 101;
             // 
             // Column2
             // 
             this.Column2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Column2.DataPropertyName = "Name";
             this.Column2.HeaderText = "Name";
             this.Column2.Name = "Column2";
-            // 
-            // Edit
-            // 
-            this.Edit.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Edit.HeaderText = "";
-            this.Edit.Image = ((System.Drawing.Image)(resources.GetObject("Edit.Image")));
-            this.Edit.Name = "Edit";
-            this.Edit.Width = 5;
+            this.Column2.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
             // Delete
             // 
@@ -120,13 +114,12 @@ namespace InventoryManagementSystem
             this.Delete.HeaderText = "";
             this.Delete.Image = ((System.Drawing.Image)(resources.GetObject("Delete.Image")));
             this.Delete.Name = "Delete";
+            this.Delete.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Delete.Width = 5;
             // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(71)))), ((int)(((byte)(160)))));
-            this.panel1.Controls.Add(this.comboRole);
-            this.panel1.Controls.Add(this.label11);
             this.panel1.Controls.Add(this.exitCF);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -157,32 +150,6 @@ namespace InventoryManagementSystem
             this.label1.TabIndex = 0;
             this.label1.Text = "Manage Categories";
             // 
-            // comboRole
-            // 
-            this.comboRole.Font = new System.Drawing.Font("Century Gothic", 9.75F);
-            this.comboRole.FormattingEnabled = true;
-            this.comboRole.Items.AddRange(new object[] {
-            "Administrator",
-            "User",
-            "Guest"});
-            this.comboRole.Location = new System.Drawing.Point(249, 13);
-            this.comboRole.Name = "comboRole";
-            this.comboRole.Size = new System.Drawing.Size(195, 25);
-            this.comboRole.TabIndex = 22;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(71)))), ((int)(((byte)(160)))));
-            this.label11.Font = new System.Drawing.Font("Century Gothic", 9.75F);
-            this.label11.ForeColor = System.Drawing.SystemColors.Control;
-            this.label11.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.label11.Location = new System.Drawing.Point(200, 16);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(44, 17);
-            this.label11.TabIndex = 23;
-            this.label11.Text = "Role :";
-            // 
             // CategoryForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
@@ -208,15 +175,12 @@ namespace InventoryManagementSystem
         #endregion
 
         private System.Windows.Forms.DataGridView dgvCategory;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        private System.Windows.Forms.DataGridViewImageColumn Edit;
-        private System.Windows.Forms.DataGridViewImageColumn Delete;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.PictureBox exitCF;
-        internal System.Windows.Forms.ComboBox comboRole;
-        internal System.Windows.Forms.Label label11;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.DataGridViewImageColumn Delete;
     }
 }

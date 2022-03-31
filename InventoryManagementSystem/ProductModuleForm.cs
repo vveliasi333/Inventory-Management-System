@@ -1,104 +1,115 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-//the namespace with the same name as the solution
 namespace InventoryManagementSystem
 {
-    //the class of Product Module Form derived from the Form class of Windows Forms
     public partial class ProductModuleForm : Form
     {
-        /*the SqlConnection command where we paste the connection string
-          in order to link the SQL database of the project*/
-        SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\Leonard\Documents\InventoryManagementSystem\Database\DB_Inventory.mdf;Integrated Security=True;Connect Timeout=30");
+        //context field of the database (DBIMSEntities)
+        DBIMSEntities context = new DBIMSEntities();
 
-        //declaring the SqlCommand in order to use it for queries executed on tables
-        SqlCommand cm = new SqlCommand();
-
-        //declaring the SqlDataReader in order to read data from the database tables
-        SqlDataReader dr;
-
-        //initializes the Product Module Form
+        //method that initializes the UserModuleForm
         public ProductModuleForm()
         {
             InitializeComponent();
-            LoadCategory();
+            LoadCategory(); //calling the LoadCategory method at form initialization
         }
 
-        //method for loading every category and their respective details to the data grid view
+        //the implementation of the method that shows category data from the table to the data grid view of the CategoryForm
         public void LoadCategory()
         {
-            //code block for selecting the category name from the category table
-            comboCat.Items.Clear();
-            cm = new SqlCommand("SELECT catname FROM tbCategory", con);
-            con.Open();
-            dr = cm.ExecuteReader();
+            //query for loading every category data from the table
+            List<tbCategory> categories = (from ctg in context.tbCategories //ctg is a variable used for the query, and context is the field to access the tbCategories (Category Table)
+                                           select ctg).ToList(); //ToList method lists every category to combobox of the ProductModuleForm
 
-            //while loop to fill out the row of the data grid view with category details
-            while (dr.Read())
-            {
-                comboCat.Items.Add(dr[0].ToString());
-            }
-            dr.Close();
-            con.Close();
+            comboCat.DataSource = categories; //comboCat is the combobox of the form where the category of the registered product can be selected
+            comboCat.DisplayMember = "CatName"; //CatName is the name of the parameter for the category name in the table
         }
 
-        //method that executes when save button is clicked
+        //method when Save button is clicked
         private void btnSave_Click(object sender, EventArgs e)
         {
-            //declaring an object in order to use buttons from User Module Form
-            UserModuleForm userModule = new UserModuleForm();
-            userModule.btnSave.Enabled = true;
-            userModule.btnUpdate.Enabled = false;
-            userModule.ShowDialog();
-
-            /*try block: firstly, outputs a message if user is sure of saving the product,
-                         and secondly, the function for inserting products to the product table*/
             try
             {
-               
-                if (MessageBox.Show("Are you sure you want to save this product?", "Saving Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                using (var db = new DBIMSEntities()) //db is a variable used as an instance of DBIMSEntities, in order to execute queries on the database
                 {
-                    //the sql command query for inserting products in the table
-                    cm = new SqlCommand("INSERT INTO tbProduct(pname,pqty,pprice,pdescription,pcategory)VALUES(@pname, @pqty, @pprice, @pdescription, @pcategory)", con);
-                    cm.Parameters.AddWithValue("@pname", txtPName.Text);
-                    cm.Parameters.AddWithValue("@pqty", Convert.ToInt16(txtPQty.Text));
-                    cm.Parameters.AddWithValue("@pprice", Convert.ToInt16(txtPPrice.Text));
-                    cm.Parameters.AddWithValue("@pdescription", txtPDes.Text);
-                    cm.Parameters.AddWithValue("@pcategory", comboCat.Text);
+                    var insert = new tbProduct(); //insert is a variable used as an instance of tbProduct (Product table)
 
-                    //opening the sql connection
-                    con.Open();
+                    //the following if conditions check if any textbox of the form is empty, and requires the user to fill the credentials out
+                    if ((txtPName.Text.Length == 0 || txtPName.Text.Trim().Length == 0)) //product name textbox if it is empty
+                    {
+                        MessageBox.Show("Please, fill out the credentials!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
 
-                    //executing the query
-                    cm.ExecuteNonQuery();
+                    if ((txtPQty.Text.Length == 0 || txtPQty.Text.Trim().Length == 0)) //product quantity textbox if it is empty
+                    {
+                        MessageBox.Show("Please, fill out the credentials!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
 
-                    //closing the sql connection
-                    con.Close();
-                    MessageBox.Show("Product has been successfully saved.");
-                    Clear();
+                    if ((txtPPrice.Text.Length == 0 || txtPPrice.Text.Trim().Length == 0)) //product price textbox if it is empty
+                    {
+                        MessageBox.Show("Please, fill out the credentials!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    if ((txtPDes.Text.Length == 0 || txtPDes.Text.Trim().Length == 0)) //product description textbox if it is empty
+                    {
+                        MessageBox.Show("Please, fill out the credentials!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    if ((comboCat.Text.Length == 0 || comboCat.Text.Trim().Length == 0)) //category combobox if it is empty
+                    {
+                        MessageBox.Show("Please, fill out the credentials!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    //instance of the ProductExist method to prevent product duplication
+                    bool exist = ProductExist(); //exist is a variable for the method
+
+                    //if condition to check if a user already exists
+                    if (exist == true) //if the answer is true means the user exists
+                    {
+                        MessageBox.Show("This product already exists!", "Register Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
+                    //else block that executes if all the conditions above are passed
+                    else
+                    {
+                        //lines that insert each data from the table to its respective textbox, and/or combobox
+                        insert.pid = Guid.NewGuid(); //product Id generated as Guid
+                        insert.pname = txtPName.Text; //pname (product name) is the parameter of the table, and txtPName is the textbox of the form
+                        insert.pqty = Convert.ToInt16(txtPQty.Text); //pqty (product quantity) is the parameter of the table, and txtPQty is the textbox of the form
+                        insert.pprice = Convert.ToInt16(txtPPrice.Text); //pprice (product price) is the parameter of the table, and txtPPrice is the textbox of the form
+                        insert.pdescription = txtPDes.Text; //pdescription (product description) is the parameter of the table, and txtPDes is the textbox of the form
+                        insert.pcategory = comboCat.Text; //pcategory (product category) is the parameter of the table, and comboCat is the category combobox of the form
+
+                        //add method that executes the query(held by the insert variable) for inserting a product to the table
+                        db.tbProducts.Add(insert);
+
+                        //method that saves changes to the table
+                        db.SaveChanges();
+
+                        MessageBox.Show("Product has been successfully saved.", "Product Created");
+                    }
                 }
-
             }
 
-            //catch block: executes when an error happens, and shows a message box to the user
-            catch (Exception ex)
+            catch (Exception) //catch block that returns a user-friendly message in case of an error
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("An error has occurred!", "Database Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-           
         }
 
-        //the clear method for clearing the entered strings in respective text boxes
+        //method for the clear button
         public void Clear()
         {
+            //clears every typed info in the textboxes
             txtPName.Clear();
             txtPQty.Clear();
             txtPPrice.Clear();
@@ -106,46 +117,39 @@ namespace InventoryManagementSystem
             comboCat.Text = "";
         }
 
-        //the clear button event when is clicked
+        //method that executes when clear button is clicked
         private void btnClear_Click(object sender, EventArgs e)
         {
             Clear();
             btnSave.Enabled = true;
-            btnUpdate.Enabled = false;
         }
 
-
-        //method for the update button when is clicked
-        private void btnUpdate_Click(object sender, EventArgs e)
+        //method that checks if a product already exists in order to prevent duplication
+        public bool ProductExist()
         {
-            /*try block: firstly, outputs a message if user is sure of updating the product,
-             and secondly, the function for updating products of the product table*/
-            try
+            //string used to check the inserted product name in the respective textbox
+            string product = this.txtPName.Text;
+
+            //query that selects the product name and checks if exists in the table
+            var query = from tr in context.tbProducts //tr is a variable used for the query
+                        where tr.pname == product
+                        select tr;
+
+            //if query returns null means that it does not exist in the table
+            if (query == null)
             {
-
-                if (MessageBox.Show("Are you sure you want to update this product?", "Update Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    //the sql command query for updating products of the table
-                    cm = new SqlCommand("UPDATE tbProduct SET pname = @pname, pqty=@pqty, pprice=@pprice, pdescription=@pdescription, pcategory=@pcategory WHERE pid LIKE '" + lblPid.Text + "' ", con);
-                    cm.Parameters.AddWithValue("@pname", txtPName.Text);
-                    cm.Parameters.AddWithValue("@pqty", Convert.ToInt16(txtPQty.Text));
-                    cm.Parameters.AddWithValue("@pprice", Convert.ToInt16(txtPPrice.Text));
-                    cm.Parameters.AddWithValue("@pdescription", txtPDes.Text);
-                    cm.Parameters.AddWithValue("@pcategory", comboCat.Text);
-                    con.Open();
-                    cm.ExecuteNonQuery();
-                    con.Close();
-                    MessageBox.Show("Product has been successfully updated!");
-                    this.Dispose();
-                }
-
+                return false;
             }
 
-            //catch block: executes when an error happens, and shows a message box to the user
-            catch (Exception ex)
+            else if (query.Count() == 0)
             {
+                return false;
+            }
 
-                MessageBox.Show(ex.Message);
+            //else would mean that it does exist in the table
+            else
+            {
+                return true;
             }
         }
     }

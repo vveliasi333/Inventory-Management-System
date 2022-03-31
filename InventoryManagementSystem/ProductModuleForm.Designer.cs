@@ -35,7 +35,6 @@ namespace InventoryManagementSystem
             this.txtPDes = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.btnClear = new System.Windows.Forms.Button();
-            this.btnUpdate = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.txtPPrice = new System.Windows.Forms.TextBox();
@@ -102,27 +101,13 @@ namespace InventoryManagementSystem
             this.btnClear.UseVisualStyleBackColor = false;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
-            // btnUpdate
-            // 
-            this.btnUpdate.BackColor = System.Drawing.Color.Red;
-            this.btnUpdate.FlatAppearance.BorderSize = 0;
-            this.btnUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnUpdate.ForeColor = System.Drawing.Color.White;
-            this.btnUpdate.Location = new System.Drawing.Point(350, 296);
-            this.btnUpdate.Name = "btnUpdate";
-            this.btnUpdate.Size = new System.Drawing.Size(94, 37);
-            this.btnUpdate.TabIndex = 24;
-            this.btnUpdate.Text = "Update";
-            this.btnUpdate.UseVisualStyleBackColor = false;
-            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
-            // 
             // btnSave
             // 
             this.btnSave.BackColor = System.Drawing.Color.Red;
             this.btnSave.FlatAppearance.BorderSize = 0;
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSave.ForeColor = System.Drawing.Color.White;
-            this.btnSave.Location = new System.Drawing.Point(250, 296);
+            this.btnSave.Location = new System.Drawing.Point(341, 296);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(94, 37);
             this.btnSave.TabIndex = 23;
@@ -190,7 +175,6 @@ namespace InventoryManagementSystem
             // comboCat
             // 
             this.comboCat.BackColor = System.Drawing.SystemColors.Window;
-            this.comboCat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboCat.FormattingEnabled = true;
             this.comboCat.Location = new System.Drawing.Point(152, 248);
             this.comboCat.Name = "comboCat";
@@ -218,7 +202,6 @@ namespace InventoryManagementSystem
             this.Controls.Add(this.txtPDes);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.btnClear);
-            this.Controls.Add(this.btnUpdate);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.txtPPrice);
@@ -249,7 +232,6 @@ namespace InventoryManagementSystem
         public System.Windows.Forms.TextBox txtPDes;
         private System.Windows.Forms.Label label6;
         public System.Windows.Forms.Button btnClear;
-        public System.Windows.Forms.Button btnUpdate;
         public System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Label label5;
         public System.Windows.Forms.TextBox txtPPrice;

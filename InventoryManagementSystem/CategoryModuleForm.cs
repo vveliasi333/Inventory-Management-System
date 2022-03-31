@@ -1,110 +1,111 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Linq;
 
-//the namespace with the same name as the solution
 namespace InventoryManagementSystem
 {
-    //the class of Category Module Form derived from the Form class of Windows Forms
     public partial class CategoryModuleForm : Form
     {
-        /*the SqlConnection command where we paste the connection string
-          in order to link the SQL database of the project*/
-        SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\Leonard\Documents\InventoryManagementSystem\Database\DB_Inventory.mdf;Integrated Security=True;Connect Timeout=30");
+        //context field of the database (DBIMSEntities)
+        DBIMSEntities context = new DBIMSEntities();
 
-        //declaring the SqlCommand in order to use it for queries executed on tables
-        SqlCommand cm = new SqlCommand();
-
-        //initializes the Category Module Form
+        //method that initializes the UserModuleForm
         public CategoryModuleForm()
         {
             InitializeComponent();
         }
 
-        //method that executes when save button is clicked
+        //method when Save button is clicked
         private void btnSave_Click(object sender, EventArgs e)
         {
-            /*try block: firstly, outputs a message if user is sure of saving the category,
-             and secondly, the function for inserting categories to the category table*/
             try
             {
-                if (MessageBox.Show("Are you sure you want to save this category?", "Saving Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                using (var db = new DBIMSEntities()) //db is a variable used as an instance of DBIMSEntities, in order to execute queries on the database
                 {
-                    //the sql command query for inserting categories in the table
-                    cm = new SqlCommand("INSERT INTO tbCategory(catname)VALUES(@catname)", con);
-                    cm.Parameters.AddWithValue("@catname", txtCatName.Text);
+                    var insert = new tbCategory(); //insert is a variable used as an instance of tbCategory (Category table)
 
-                    //opening the sql connection
-                    con.Open();
+                    //if condition checks if the textbox of the form is empty, and requires the user to fill the credential out
+                    if ((txtCatName.Text.Length == 0 || txtCatName.Text.Trim().Length == 0)) //category name textbox if it is empty
+                    {
+                        MessageBox.Show("Please, fill out the credentials!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
 
-                    //executing the query
-                    cm.ExecuteNonQuery();
+                    //instance of the CategoryExist method to prevent category duplication
+                    bool exist = CategoryExist(); //exist is a variable for the method
 
-                    //closing the sql connection
-                    con.Close();
-                    MessageBox.Show("Category has been successfully saved.");
-                    Clear();
+                    //if condition to check if a category already exists
+                    if (exist == true) //if the answer is true means the category exists
+                    {
+                        MessageBox.Show("This category already exists!", "Register Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
+                    //else block that executes if all the conditions above are passed
+                    else
+                    {
+                        //lines that insert each data from the table to its respective textbox
+                        insert.CatId = Guid.NewGuid(); //category Id generated as Guid
+                        insert.CatName = txtCatName.Text; //CatName (category name) is the parameter of the table, and txtCatName is the textbox of the form
+
+                        //add method that executes the query(held by the insert variable) for inserting a category to the table
+                        db.tbCategories.Add(insert);
+
+                        //method that saves changes to the table
+                        db.SaveChanges();
+
+                        MessageBox.Show("Category has been successfully saved.", "Category Created");
+                    }
                 }
-
             }
 
-            //catch block: executes when an error happens, and shows a message box to the user
-            catch (Exception ex)
+            catch (Exception) //catch block that returns a user-friendly message in case of an error
             {
-
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("An error has occurred!", "Database Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        //the clear method for clearing the entered strings in respective text boxes
+        //method for the clear button
         public void Clear()
         {
+            //clears every typed info in the textbox
             txtCatName.Clear();
         }
 
-        //the clear button event when is clicked
+        //method that executes when clear button is clicked
         private void btnClear_Click(object sender, EventArgs e)
         {
             Clear();
             UserModuleForm userModule = new UserModuleForm();
             userModule.btnSave.Enabled = true;
-            userModule.btnUpdate.Enabled = false;
             userModule.ShowDialog();
         }
 
-        //method for the update button when is clicked
-        private void btnUpdate_Click(object sender, EventArgs e)
+        //method that checks if a category already exists in order to prevent duplication
+        public bool CategoryExist()
         {
-            /*try block: firstly, outputs a message if user is sure of updating the category,
-              and secondly, the function for updating categories of the category table*/
-            try
-            {
-                if (MessageBox.Show("Are you sure you want to update this Category?", "Update Record", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    //the sql command query for updating categories of the table
-                    cm = new SqlCommand("UPDATE tbCategory SET catname = @catname WHERE catid LIKE '" + lblCatId.Text + "' ", con);
-                    cm.Parameters.AddWithValue("@catname", txtCatName.Text);                    
-                    con.Open();
-                    cm.ExecuteNonQuery();
-                    con.Close();
-                    MessageBox.Show("Category has been successfully updated!");
-                    this.Dispose();
-                }
+            //string used to check the inserted category name in the respective textbox
+            string category = this.txtCatName.Text;
 
+            //query that selects the category name and checks if exists in the table
+            var query = from tr in context.tbCategories //tr is a variable used for the query
+                        where tr.CatName == category
+                        select tr;
+
+            //if query returns null means that it does not exist in the table
+            if (query == null)
+            {
+                return false;
             }
 
-            //catch block: executes when an error happens, and shows a message box to the user
-            catch (Exception ex)
+            else if (query.Count() == 0)
             {
+                return false;
+            }
 
-                MessageBox.Show(ex.Message);
+            //else would mean that it does exist in the table
+            else
+            {
+                return true;
             }
         }
     }
